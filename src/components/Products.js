@@ -1,8 +1,11 @@
 import React, { useEffect , useState } from 'react'
 import { add } from '../store/CartSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch , useSelector } from 'react-redux';
+import { fetchProducts } from '../store/productSlice';
+import { STATUSES } from '../store/productSlice';
 const Products = () => {
 
+  const {data:products ,status}=useSelector(state=>state.product)
   const dispatch = useDispatch()
   const handleAdd =(product)=>{
     // save product in redux store 
@@ -10,17 +13,23 @@ const Products = () => {
     dispatch(add(product));
   }
   // making products state
-  const [products,setProducts]=useState([]);
+  // const [products,setProducts]=useState([]);
   // fetching products from api
   useEffect(()=>{
-    const fetchProducts = async()=>{
-      const response = await fetch('https://fakestoreapi.com/products')
-      const data = await response.json()
-      console.log(data)
-      setProducts(data)
-    }
-    fetchProducts()
+    // const fetchProducts = async()=>{
+    //   const response = await fetch('https://fakestoreapi.com/products')
+    //   const data = await response.json()
+    //   setProducts(data)
+    // }
+    // fetchProducts()
+    dispatch(fetchProducts())
   },[])
+
+  if(status===STATUSES.LOADING){
+    return <h2>Loading</h2>
+  }else if(status===STATUSES.ERROR){
+    return <h2>Oops Error ! 404</h2>
+  }
   return (
     <div className='productsWrapper'>
       {
